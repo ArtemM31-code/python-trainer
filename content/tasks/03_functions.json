@@ -1,0 +1,118 @@
+[
+  {
+    "id": "func-01-power",
+    "topic_id": "functions",
+    "topic_title": "Функции в Python",
+    "title": "Возведение в степень со значением по умолчанию",
+    "difficulty": "easy",
+    "theory": "### Определение функций и аргументы по умолчанию\n\nФункция объявляется ключевым словом `def`, за которым следует имя, круглые скобки со списком параметров и двоеточие. Ключевое слово `return` возвращает результат вызывающему коду:\n\n```python\ndef square(n: float) -> float:\n    return n * n\n```\n\nПараметры могут иметь значения по умолчанию. Параметры по умолчанию должны располагаться **после** всех обязательных позиционных параметров:\n\n```python\ndef greet(name: str, greeting: str = \"Привет\") -> str:\n    return f\"{greeting}, {name}!\"\n```\n\nЕсли аргумент `greeting` не указан при вызове, используется `\"Привет\"`.",
+    "instructions": "Напишите функцию `power(base: float, exponent: int = 2) -> float`:\n1. Принимает число `base` и показатель степени `exponent` (по умолчанию `2`).\n2. Возводит число `base` в степень `exponent` с помощью оператора `**`.\n3. Возвращает результат как число с плавающей точкой (`float`).\n4. Должны поддерживаться нулевые и отрицательные показатели степени.",
+    "starter_code": "def power(base: float, exponent: int = 2) -> float:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Используйте float(base ** exponent).",
+    "test_cases": [
+      {
+        "description": "Вызов с одним аргументом (квадрат числа)",
+        "test_code": "assert power(5) == 25.0"
+      },
+      {
+        "description": "Вызов с двумя аргументами (куб числа)",
+        "test_code": "assert power(2, 3) == 8.0"
+      },
+      {
+        "description": "Возведение в нулевую степень",
+        "test_code": "assert power(4, 0) == 1.0"
+      },
+      {
+        "description": "Отрицательный показатель степени",
+        "test_code": "assert power(2, -1) == 0.5"
+      }
+    ]
+  },
+  {
+    "id": "func-02-clamp-docstring",
+    "topic_id": "functions",
+    "topic_title": "Функции в Python",
+    "title": "Ограничение значения диапазона (Clamp) и Docstring",
+    "difficulty": "easy",
+    "theory": "### Документирование функций (Docstrings)\n\nСтрока документации (docstring) размещается первой строкой внутри тела функции в тройных кавычках `\"\"\"...\"\"\"`:\n\n```python\ndef add(a: int, b: int) -> int:\n    \"\"\"Возвращает сумму двух целых чисел.\"\"\"\n    return a + b\n```\n\nDocstring доступен через атрибут функции `add.__doc__` и используется IDE для всплывающих подсказок.\n\nФункция ограничения диапазона `clamp` удерживает значение между минимальной и максимальной границей: если значение меньше минимума, возвращается минимум; если больше максимума — максимум.",
+    "instructions": "Напишите функцию `clamp(value: float, min_val: float = 0.0, max_val: float = 100.0) -> float`:\n1. Обязательно добавьте многострочный docstring с описанием работы функции.\n2. Если `min_val > max_val`, функция должна автоматически поменять их местами (`min_val, max_val = max_val, min_val`).\n3. Ограничьте `value` в диапазоне от `min_val` до `max_val` и верните результат в виде `float`.",
+    "starter_code": "def clamp(value: float, min_val: float = 0.0, max_val: float = 100.0) -> float:\n    \"\"\"Добавьте подробное описание функции здесь.\"\"\"\n    # Ваш код здесь\n    pass\n",
+    "hint": "Проверьте min_val > max_val. Затем используйте float(max(min_val, min(value, max_val))). Не удаляйте тройные кавычки docstring!",
+    "test_cases": [
+      {
+        "description": "Значение внутри диапазона",
+        "test_code": "assert clamp(50.0, 0.0, 100.0) == 50.0"
+      },
+      {
+        "description": "Значение превышает максимум",
+        "test_code": "assert clamp(150.0, 0.0, 100.0) == 100.0"
+      },
+      {
+        "description": "Значение меньше минимума",
+        "test_code": "assert clamp(-20.0, 0.0, 100.0) == 0.0"
+      },
+      {
+        "description": "Перепутанный порядок min_val и max_val",
+        "test_code": "assert clamp(25.0, 50.0, 10.0) == 25.0"
+      },
+      {
+        "description": "Наличие осмысленного docstring",
+        "test_code": "assert bool(clamp.__doc__ and len(clamp.__doc__.strip()) >= 10), 'Функция должна содержать docstring длиною не менее 10 символов'"
+      }
+    ]
+  },
+  {
+    "id": "func-03-pipeline-first-class",
+    "topic_id": "functions",
+    "topic_title": "Функции в Python",
+    "title": "Конвейер функций (First-Class Functions)",
+    "difficulty": "medium",
+    "theory": "### Функции как объекты первого класса\n\nВ Python функции являются объектами первого класса (first-class citizens):\n1. Их можно сохранять в переменные: `f = abs`\n2. Их можно передавать аргументами в другие функции: `map(f, [1, -2])`\n3. Их можно хранить в структурах данных: `operations = [int, float, str]`\n4. Их можно возвращать из других функций.\n\nПаттерн конвейера (Pipeline) применяет цепочку функций последовательно, передавая результат работы предыдущей функции на вход следующей.",
+    "instructions": "Напишите функцию `apply_pipeline(initial_value: float, functions: list) -> float`:\n1. Принимает начальное значение `initial_value` и список функций `functions`.\n2. Последовательно вызывает каждую функцию из списка, передавая ей результат предыдущего вызова.\n3. Если список функций пуст, возвращает `initial_value` без изменений.\n4. Возвращает итоговое числовое значение.",
+    "starter_code": "from typing import Callable\n\ndef apply_pipeline(initial_value: float, functions: list[Callable[[float], float]]) -> float:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Инициализируйте current = initial_value, пройдитесь циклом for fn in functions: current = fn(current), затем верните current.",
+    "test_cases": [
+      {
+        "description": "Цепочка умножения и сложения",
+        "test_code": "assert apply_pipeline(5, [lambda x: x * 2, lambda x: x + 10]) == 20"
+      },
+      {
+        "description": "Пустой список функций",
+        "test_code": "assert apply_pipeline(100.5, []) == 100.5"
+      },
+      {
+        "description": "Тройной конвейер математических операций",
+        "test_code": "assert apply_pipeline(4, [lambda x: x ** 0.5, lambda x: x * 3, lambda x: x - 1]) == 5.0"
+      }
+    ]
+  },
+  {
+    "id": "func-04-flatten-recursion",
+    "topic_id": "functions",
+    "topic_title": "Функции в Python",
+    "title": "Рекурсивное уплощение вложенных списков (Deep Flatten)",
+    "difficulty": "hard",
+    "theory": "### Рекурсия в Python\n\nРекурсивная функция — это функция, которая вызывает саму себя.\n\nЛюбая рекурсивная функция требует двух обязательных частей:\n1. **Базовый случай** (условие выхода): точка, в которой рекурсия останавливается и возвращается прямое значение без дальнейших самовызовов.\n2. **Шаг рекурсии**: вызов функции от уменьшенной или подзадачи, приближающий к базовому случаю.\n\nДля проверки, является ли элемент списком, используется `isinstance(item, list)`.",
+    "instructions": "Напишите рекурсивную функцию `deep_flatten(nested_list: list) -> list`:\n1. Принимает список `nested_list`, который может содержать как простые значения (числа, строки), так и списки любой глубины вложенности.\n2. Возвращает плоский одномерный список всех элементов в исходном порядке следования слева направо.\n3. Пустые вложенные списки (`[]`) должны игнорироваться и не появляться в результате.\n4. Если передан пустой список, вернуть `[]`.",
+    "starter_code": "def deep_flatten(nested_list: list) -> list:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Создайте flat = []. В цикле for item in nested_list: если isinstance(item, list) — flat.extend(deep_flatten(item)), иначе flat.append(item). Верните flat.",
+    "test_cases": [
+      {
+        "description": "Сложная многоуровневая вложенность",
+        "test_code": "assert deep_flatten([1, [2, [3, 4], 5], [6]]) == [1, 2, 3, 4, 5, 6]"
+      },
+      {
+        "description": "Вложенные пустые списки",
+        "test_code": "assert deep_flatten([[], [[], 1], [2, []]]) == [1, 2]"
+      },
+      {
+        "description": "Уже плоский список",
+        "test_code": "assert deep_flatten([1, 2, 3]) == [1, 2, 3]"
+      },
+      {
+        "description": "Пустой список",
+        "test_code": "assert deep_flatten([]) == []"
+      }
+    ]
+  }
+]

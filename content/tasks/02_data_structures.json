@@ -1,0 +1,118 @@
+[
+  {
+    "id": "ds-01-even-squares",
+    "topic_id": "data_structures",
+    "topic_title": "Структуры данных",
+    "title": "Генераторы списков (List Comprehensions)",
+    "difficulty": "easy",
+    "theory": "### Генераторы списков (List Comprehensions)\n\nГенератор списка — это лаконичный и идиоматичный способ создания нового списка на основе существующего итерируемого объекта.\n\nБазовый синтаксис с условием фильтрации:\n```python\n[выражение for элемент in коллекция if условие]\n```\n\nПример выборки положительных чисел:\n```python\nnums = [-2, 3, -5, 8]\npositives = [x for x in nums if x > 0]  # [3, 8]\n```\n\nДля проверки чётности используется оператор остатка от деления: `x % 2 == 0`.",
+    "instructions": "Напишите функцию `get_even_squares(numbers: list[int]) -> list[int]`:\n1. Принимает список целых чисел `numbers`.\n2. С помощью генератора списка (list comprehension) отфильтровывает только чётные числа и возводит каждое в квадрат (`x ** 2`).\n3. Возвращает полученный список квадратов с сохранением исходного порядка элементов.\n4. Для пустого списка или списка без чётных чисел возвращает пустой список `[]`.",
+    "starter_code": "def get_even_squares(numbers: list[int]) -> list[int]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Используйте синтаксис: return [x ** 2 for x in numbers if x % 2 == 0]",
+    "test_cases": [
+      {
+        "description": "Смешанный список положительных чисел",
+        "test_code": "assert get_even_squares([1, 2, 3, 4, 5, 6]) == [4, 16, 36]"
+      },
+      {
+        "description": "Список только из нечётных чисел",
+        "test_code": "assert get_even_squares([1, 3, 5, 7]) == []"
+      },
+      {
+        "description": "Отрицательные числа и ноль",
+        "test_code": "assert get_even_squares([-4, -3, -2, 0]) == [16, 4, 0]"
+      },
+      {
+        "description": "Пустой входной список",
+        "test_code": "assert get_even_squares([]) == []"
+      }
+    ]
+  },
+  {
+    "id": "ds-02-word-frequencies",
+    "topic_id": "data_structures",
+    "topic_title": "Структуры данных",
+    "title": "Частотный словарь слов",
+    "difficulty": "medium",
+    "theory": "### Словари (dict) и подсчёт элементов\n\nСловарь хранит пары «ключ-значение» и обеспечивает быстрый доступ $O(1)$.\n\nПри подсчёте элементов удобно использовать метод `dict.get(key, default)`:\n```python\ncounts = {}\nfor item in items:\n    counts[item] = counts.get(item, 0) + 1\n```\n\nДля разбивки текста на слова применяется метод `.split()`, который автоматически разделяет строку по любым пробельным символам (пробелы, табуляции, переводы строк).",
+    "instructions": "Напишите функцию `count_words(text: str) -> dict[str, int]`:\n1. Принимает строку `text`.\n2. Приводит весь текст к нижнему регистру с помощью `.lower()`.\n3. Заменяет знаки пунктуации (`,`, `.`, `!`, `?`, `;`, `:`) на пробелы.\n4. Разбивает строку на слова методом `.split()`.\n5. Подсчитывает частоту каждого слова и возвращает словарь формата `{\"слово\": количество}`.\n6. Если входная строка пуста или содержит только пунктуацию/пробелы, вернуть `{}`.",
+    "starter_code": "def count_words(text: str) -> dict[str, int]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Очистите строку: for p in ',.?!;:': text = text.replace(p, ' '). Затем разбейте на слова text.lower().split() и подсчитайте в цикле или через get().",
+    "test_cases": [
+      {
+        "description": "Предложение с разной пунктуацией и повторами",
+        "test_code": "assert count_words(\"Яблоко, груша; яблоко! Банан.\") == {\"яблоко\": 2, \"груша\": 1, \"банан\": 1}"
+      },
+      {
+        "description": "Проверка нечувствительности к регистру",
+        "test_code": "assert count_words(\"Test test TEST\") == {\"test\": 3}"
+      },
+      {
+        "description": "Пустая строка",
+        "test_code": "assert count_words(\"\") == {}"
+      },
+      {
+        "description": "Строка только из знаков препинания и пробелов",
+        "test_code": "assert count_words(\",, . ; ? !\") == {}"
+      }
+    ]
+  },
+  {
+    "id": "ds-03-set-operations",
+    "topic_id": "data_structures",
+    "topic_title": "Структуры данных",
+    "title": "Операции над множествами (Sets)",
+    "difficulty": "medium",
+    "theory": "### Множества (set) и теория множеств\n\nМножество `set` хранит только уникальные элементы в произвольном порядке.\n\nОсновные операции над множествами:\n- `&` — пересечение (элементы, присутствующие в обоих множествах)\n- `|` — объединение (элементы из первого, второго или обоих)\n- `-` — разность (элементы первого множества, которых нет во втором)\n- `^` — симметрическая разность (элементы одного или другого, но не обоих одновременно)\n\nГенератор множества (set comprehension):\n```python\nclean_tags = {tag.strip().lower() for tag in raw_tags}\n```",
+    "instructions": "Напишите функцию `analyze_tags(tags_a: list[str], tags_b: list[str]) -> dict[str, set[str]]`:\n1. Принимает два списка тегов: `tags_a` и `tags_b`.\n2. Приводит все теги к нижнему регистру и преобразует списки в множества.\n3. Возвращает словарь с тремя ключами:\n   - `\"common\"`: множество общих тегов (`set_a & set_b`);\n   - `\"only_a\"`: множество тегов, уникальных для первого списка (`set_a - set_b`);\n   - `\"only_b\"`: множество тегов, уникальных для второго списка (`set_b - set_a`).",
+    "starter_code": "def analyze_tags(tags_a: list[str], tags_b: list[str]) -> dict[str, set[str]]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Создайте множества: a = {t.lower() for t in tags_a} и b = {t.lower() for t in tags_b}. Верните словарь: {'common': a & b, 'only_a': a - b, 'only_b': b - a}.",
+    "test_cases": [
+      {
+        "description": "Списки тегов с пересечением и уникальными значениями",
+        "test_code": "assert analyze_tags([\"Python\", \"Django\", \"SQL\"], [\"python\", \"Flask\", \"sql\"]) == {\"common\": {\"python\", \"sql\"}, \"only_a\": {\"django\"}, \"only_b\": {\"flask\"}}"
+      },
+      {
+        "description": "Полностью непересекающиеся множества",
+        "test_code": "assert analyze_tags([\"AI\"], [\"ML\"]) == {\"common\": set(), \"only_a\": {\"ai\"}, \"only_b\": {\"ml\"}}"
+      },
+      {
+        "description": "Полностью одинаковые наборы тегов с разным регистром",
+        "test_code": "assert analyze_tags([\"GIT\", \"Docker\"], [\"git\", \"docker\"]) == {\"common\": {\"git\", \"docker\"}, \"only_a\": set(), \"only_b\": set()}"
+      },
+      {
+        "description": "Оба списка пусты",
+        "test_code": "assert analyze_tags([], []) == {\"common\": set(), \"only_a\": set(), \"only_b\": set()}"
+      }
+    ]
+  },
+  {
+    "id": "ds-04-aggregate-inventory",
+    "topic_id": "data_structures",
+    "topic_title": "Структуры данных",
+    "title": "Агрегация партий товаров в инвентаре",
+    "difficulty": "hard",
+    "theory": "### Вложенные структуры и агрегация данных\n\nПри обработке данных из баз данных или API часто приходится объединять серии словарей в единую сводную структуру.\n\nДля итерации по парам ключ-значение словаря используется `.items()`:\n```python\nfor key, val in d.items():\n    ...\n```\n\nСортировка ключей словаря:\n```python\nsorted_keys = sorted(my_dict.keys())\n```",
+    "instructions": "На склад поступают партии товаров в виде списка словарей: `[{\"apple\": 10, \"banana\": 5}, {\"apple\": 15, \"orange\": 8}, ...]`.\n\nНапишите функцию `aggregate_inventory(batches: list[dict[str, int]]) -> dict[str, int]`:\n1. Принимает список словарей `batches`.\n2. Суммирует количество для каждого уникального товара по всем партиям.\n3. Исключает из результата товары, суммарное количество которых меньше либо равно 0 (`total <= 0`).\n4. Возвращает новый словарь, в котором ключи отсортированы по алфавиту.\n5. Если список пуст или все остатки `<= 0`, возвращает пустой словарь `{}`.",
+    "starter_code": "def aggregate_inventory(batches: list[dict[str, int]]) -> dict[str, int]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Соберите суммы в totals = {}. Затем отсортируйте ключи через sorted(totals) и сформируйте словарь {k: totals[k] for k in sorted(totals) if totals[k] > 0}.",
+    "test_cases": [
+      {
+        "description": "Стандартное слияние партий товаров",
+        "test_code": "assert aggregate_inventory([{\"apple\": 10, \"banana\": 5}, {\"apple\": 15, \"orange\": 8}]) == {\"apple\": 25, \"banana\": 5, \"orange\": 8}"
+      },
+      {
+        "description": "Исключение товаров с нулевым или отрицательным остатком",
+        "test_code": "assert aggregate_inventory([{\"item\": 10}, {\"item\": -10}, {\"other\": -5}]) == {}"
+      },
+      {
+        "description": "Проверка алфавитной сортировки ключей",
+        "test_code": "res = aggregate_inventory([{\"zebra\": 1}, {\"apple\": 2}, {\"cat\": 3}]); assert list(res.keys()) == [\"apple\", \"cat\", \"zebra\"]"
+      },
+      {
+        "description": "Пустой список партий",
+        "test_code": "assert aggregate_inventory([]) == {}"
+      }
+    ]
+  }
+]

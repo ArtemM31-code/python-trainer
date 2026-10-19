@@ -1,0 +1,102 @@
+[
+  {
+    "id": "dec-01-call-counter",
+    "topic_id": "decorators",
+    "topic_title": "Декораторы функций",
+    "title": "Декоратор подсчёта вызовов (Call Counter)",
+    "difficulty": "easy",
+    "theory": "### Декораторы и сохранение метаданных с functools.wraps\n\nДекоратор — это функция, принимающая другую функцию и возвращающая её модифицированную версию:\n\n```python\n@decorator\ndef func():\n    pass\n# Эквивалентно: func = decorator(func)\n```\n\nПри оборачивании функция теряет исходное имя (`__name__`) и документацию (`__doc__`). Чтобы сохранить метаданные оригинала, стандартная библиотека Python предоставляет `@functools.wraps(func)`:\n\n```python\nimport functools\n\ndef my_decorator(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n```",
+    "instructions": "Напишите декоратор `count_calls(func)`:\n1. Оборачивает функцию с сохранением её метаданных через `@functools.wraps(func)`.\n2. Добавляет обёртке числовой атрибут `calls` (изначально равен 0).\n3. При каждом вызове декорированной функции увеличивает `wrapper.calls` на 1.\n4. Вызывает исходную функцию с переданными аргументами и возвращает её результат.",
+    "starter_code": "import functools\n\ndef count_calls(func):\n    # Ваш код здесь\n    pass\n",
+    "hint": "Определите wrapper(*args, **kwargs). Внутри: wrapper.calls += 1; return func(*args, **kwargs). Перед возвратом wrapper установите: wrapper.calls = 0.",
+    "test_cases": [
+      {
+        "description": "Подсчёт вызовов функции сложения",
+        "test_code": "import functools\n@count_calls\ndef add(a, b):\n    return a + b\nassert add.calls == 0\nassert add(1, 2) == 3\nassert add.calls == 1\nassert add(10, 20) == 30\nassert add.calls == 2"
+      },
+      {
+        "description": "Сохранение метаданных функции (__name__ и __doc__)",
+        "test_code": "import functools\n@count_calls\ndef say_hi():\n    \"\"\"Приветствие\"\"\"\n    return \"hi\"\nassert say_hi.__name__ == \"say_hi\"\nassert say_hi.__doc__ == \"Приветствие\""
+      }
+    ]
+  },
+  {
+    "id": "dec-02-api-envelope",
+    "topic_id": "decorators",
+    "topic_title": "Декораторы функций",
+    "title": "Декоратор обёртки API-ответа (Error Handling Wrapper)",
+    "difficulty": "medium",
+    "theory": "### Перехват исключений и нормализация ответов декоратором\n\nДекораторы часто применяются в веб-фреймворках (FastAPI, Flask) для стандартизации ответов API и перехвата непредвиденных исключений.\n\nВнутри функции-обёртки можно использовать конструкцию `try...except`, упаковывая результат или пойманную ошибку в унифицированный JSON-подобный словарь.",
+    "instructions": "Напишите декоратор `api_response(func)`:\n1. Использует `@functools.wraps(func)`.\n2. Вызывает декорируемую функцию.\n3. При успешном выполнении возвращает словарь:\n   `{\"status\": \"success\", \"function\": func.__name__, \"data\": result}`\n4. Если функция выбрасывает любое исключение (`Exception`), перехватывает его и возвращает словарь:\n   `{\"status\": \"error\", \"function\": func.__name__, \"error\": str(e)}` (без падения программы).",
+    "starter_code": "import functools\n\ndef api_response(func):\n    # Ваш код здесь\n    pass\n",
+    "hint": "Внутри wrapper используйте try: data = func(*args, **kwargs); return {'status': 'success', 'function': func.__name__, 'data': data} except Exception as e: return {'status': 'error', 'function': func.__name__, 'error': str(e)}.",
+    "test_cases": [
+      {
+        "description": "Успешный вызов математической функции",
+        "test_code": "@api_response\ndef multiply(x, y):\n    return x * y\nassert multiply(4, 5) == {\"status\": \"success\", \"function\": \"multiply\", \"data\": 20}"
+      },
+      {
+        "description": "Перехват исключения деления на ноль",
+        "test_code": "@api_response\ndef unsafe_divide(a, b):\n    return a / b\nres = unsafe_divide(10, 0)\nassert res[\"status\"] == \"error\"\nassert res[\"function\"] == \"unsafe_divide\"\nassert \"division by zero\" in res[\"error\"].lower()"
+      },
+      {
+        "description": "Перехват исключения ValueError",
+        "test_code": "@api_response\ndef parse_int(s):\n    return int(s)\nres = parse_int(\"invalid\")\nassert res[\"status\"] == \"error\"\nassert res[\"function\"] == \"parse_int\""
+      }
+    ]
+  },
+  {
+    "id": "dec-03-repeat-decorator",
+    "topic_id": "decorators",
+    "topic_title": "Декораторы функций",
+    "title": "Параметризованный декоратор @repeat(num_times)",
+    "difficulty": "medium",
+    "theory": "### Декораторы, принимающие аргументы\n\nКогда декоратор принимает аргументы (например, `@repeat(3)`), это функция высшего порядка, возвращающая сам декоратор (трёхуровневая вложенность):\n\n```python\ndef repeat(num_times):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            # логика\n            pass\n        return wrapper\n    return decorator\n```\n\nВнешняя функция принимает параметры настройки, средняя принимает декорируемую функцию, а внутренняя принимает аргументы вызова функции.",
+    "instructions": "Напишите параметризованный декоратор `repeat(num_times: int)`:\n1. Принимает количество повторений `num_times`.\n2. Вызывает декорируемую функцию ровно `num_times` раз с переданными аргументами.\n3. Возвращает результат ПОСЛЕДНЕГО выполненного вызова.\n4. Если `num_times <= 0`, целевая функция не должна вызываться вовсе, а вернуть `None`.\n5. Сохраняет метаданные оригинальной функции с помощью `@functools.wraps`.",
+    "starter_code": "import functools\n\ndef repeat(num_times: int = 1):\n    # Ваш код здесь\n    pass\n",
+    "hint": "Верните функцию decorator(func), внутри которой wrapper(*args, **kwargs). В цикле for _ in range(num_times): result = func(*args, **kwargs). Если num_times <= 0: return None.",
+    "test_cases": [
+      {
+        "description": "Повторение вызова функции с побочным эффектом 3 раза",
+        "test_code": "counter = [0]\n@repeat(3)\ndef inc():\n    counter[0] += 1; return counter[0]\nassert inc() == 3\nassert counter[0] == 3"
+      },
+      {
+        "description": "Поведение при num_times <= 0 (функция не вызывается)",
+        "test_code": "called = [False]\n@repeat(0)\ndef boom():\n    called[0] = True; return 42\nassert boom() is None\nassert called[0] is False"
+      },
+      {
+        "description": "Сохранение метаданных и аргументов функции",
+        "test_code": "@repeat(2)\ndef greet(name: str) -> str:\n    \"\"\"Приветствует пользователя.\"\"\"\n    return f\"Привет, {name}!\"\nassert greet(\"Михаил\") == \"Привет, Михаил!\"\nassert greet.__name__ == \"greet\"\nassert greet.__doc__ == \"Приветствует пользователя.\""
+      }
+    ]
+  },
+  {
+    "id": "dec-04-type-enforcer",
+    "topic_id": "decorators",
+    "topic_title": "Декораторы функций",
+    "title": "Декоратор строгой проверки типов (Runtime Type Checker)",
+    "difficulty": "hard",
+    "theory": "### Интроспекция сигнатур и проверка типов в Runtime\n\nМодуль `inspect` предоставляет инструмент `inspect.signature(func)`, который позволяет связать переданные аргументы (`args`, `kwargs`) с именами параметров через `bound = sig.bind(*args, **kwargs)` и заполнить дефолтные значения `bound.apply_defaults()`.\n\nАннотации типов функции хранятся в словаре `func.__annotations__` (где ключ — имя параметра, а ключ `'return'` — тип возвращаемого значения).",
+    "instructions": "Напишите декоратор `enforce_types(func)`:\n1. При вызове функции проверяет типы переданных позиционных и именованных аргументов на соответствие аннотациям `func.__annotations__`.\n2. Если для параметра указана аннотация и переданное значение НЕ является экземпляром этого типа (`not isinstance(val, expected_type)`), выбросите исключение `TypeError` с сообщением об ошибке.\n3. Если передан аргумент правильного типа — выполните функцию.\n4. Если у функции есть аннотация `'return'`, проверьте тип результата: если результат не соответствует аннотации, также выбросите `TypeError`.\n5. Сохраняйте метаданные функции через `@functools.wraps(func)`.",
+    "starter_code": "import functools\nimport inspect\n\ndef enforce_types(func):\n    # Ваш код здесь\n    pass\n",
+    "hint": "Используйте sig = inspect.signature(func). Внутри wrapper: bound = sig.bind(*args, **kwargs); bound.apply_defaults(). Для каждого name, val в bound.arguments.items(): если name в func.__annotations__ и not isinstance(val, func.__annotations__[name]) -> raise TypeError. Затем проверьте return.",
+    "test_cases": [
+      {
+        "description": "Корректные аргументы сложения целых чисел",
+        "test_code": "@enforce_types\ndef add(a: int, b: int) -> int:\n    return a + b\nassert add(10, 20) == 30"
+      },
+      {
+        "description": "Выброс TypeError при передаче строки вместо int",
+        "test_code": "@enforce_types\ndef add(a: int, b: int) -> int:\n    return a + b\nerr = False\ntry:\n    add(\"10\", 20)\nexcept TypeError:\n    err = True\nassert err is True, \"Должен быть выброшен TypeError при неверном типе аргумента\""
+      },
+      {
+        "description": "Выброс TypeError при неверном типе возвращаемого значения",
+        "test_code": "@enforce_types\ndef bad_calc(x: int) -> int:\n    return str(x)\nerr = False\ntry:\n    bad_calc(5)\nexcept TypeError:\n    err = True\nassert err is True, \"Должен быть выброшен TypeError при неверном типе return\""
+      },
+      {
+        "description": "Корректная работа с именованными аргументами и типами float",
+        "test_code": "@enforce_types\ndef scale(val: float, factor: float = 2.0) -> float:\n    return val * factor\nassert scale(5.0, factor=3.0) == 15.0"
+      }
+    ]
+  }
+]

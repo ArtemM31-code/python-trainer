@@ -1,0 +1,106 @@
+[
+  {
+    "id": "scope-01-make-multiplier",
+    "topic_id": "closures_legb",
+    "topic_title": "Замыкания и область видимости LEGB",
+    "title": "Фабрика множителей (Простое замыкание)",
+    "difficulty": "easy",
+    "theory": "### Области видимости LEGB и Замыкания\n\nВ Python поиск переменных происходит по правилу **LEGB**:\n1. **L**ocal — локальная область внутри текущей функции;\n2. **E**nclosing — область видимости объемлющих (внешних) функций;\n3. **G**lobal — глобальные переменные текущего модуля/файла;\n4. **B**uilt-in — встроенные функции и типы Python (`len`, `range`, `str`).\n\n**Замыкание (closure)** — это вложенная функция, которая сохраняет доступ к переменным из охватывающей области видимости (`Enclosing`), даже после того как внешняя функция завершила своё выполнение.",
+    "instructions": "Напишите функцию `make_multiplier(factor: float)`:\n1. Принимает число `factor`.\n2. Внутри объявляет и возвращает функцию `multiplier(x: float) -> float`.\n3. Возвращаемая функция должна умножать полученный аргумент `x` на сохранённый `factor`.\n4. Функция должна поддерживать как целые, так и вещественные числа.",
+    "starter_code": "from typing import Callable\n\ndef make_multiplier(factor: float) -> Callable[[float], float]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Объявите внутри: def multiplier(x: float) -> float: return x * factor. Затем верните multiplier.",
+    "test_cases": [
+      {
+        "description": "Умножитель на 2 (удвоение)",
+        "test_code": "double = make_multiplier(2); assert double(5) == 10 and double(-3) == -6"
+      },
+      {
+        "description": "Умножитель на 3 (утроение)",
+        "test_code": "triple = make_multiplier(3); assert triple(4) == 12"
+      },
+      {
+        "description": "Дробный коэффициент умножения",
+        "test_code": "scale = make_multiplier(2.5); assert scale(4) == 10.0"
+      },
+      {
+        "description": "Независимость двух инстансов замыканий",
+        "test_code": "f1 = make_multiplier(10); f2 = make_multiplier(100); assert f1(2) == 20 and f2(2) == 200"
+      }
+    ]
+  },
+  {
+    "id": "scope-02-stateful-counter",
+    "topic_id": "closures_legb",
+    "topic_title": "Замыкания и область видимости LEGB",
+    "title": "Счётчик с ключевым словом nonlocal",
+    "difficulty": "medium",
+    "theory": "### Ключевое слово nonlocal\n\nПо умолчанию переменные из Enclosing-области доступны только для чтения. При попытке изменить переменную: `count += 1`, Python посчитает её новой локальной переменной и выбросит `UnboundLocalError`.\n\nКлючевое слово `nonlocal` сообщает интерпретатору, что переменная относится к ближайшей внешней (Enclosing) функции, позволяя изменять её значение:\n\n```python\ndef outer():\n    val = 0\n    def inner():\n        nonlocal val\n        val += 1\n        return val\n    return inner\n```",
+    "instructions": "Напишите функцию `make_counter(start: int = 0, step: int = 1)`:\n1. Принимает начальное значение `start` (по умолчанию 0) и шаг `step` (по умолчанию 1).\n2. Возвращает функцию-счётчик без аргументов `counter()`.\n3. При каждом вызове `counter()` должен возвращать ТЕКУЩЕЕ значение, а затем увеличивать внутреннее состояние на `step`.\n4. Каждый экземпляр `make_counter` должен иметь собственное независимое состояние.",
+    "starter_code": "from typing import Callable\n\ndef make_counter(start: int = 0, step: int = 1) -> Callable[[], int]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Создайте current = start. Внутри counter() используйте nonlocal current, сохраните val = current, сделайте current += step и верните val.",
+    "test_cases": [
+      {
+        "description": "Счётчик по умолчанию (старт 0, шаг 1)",
+        "test_code": "c = make_counter(); assert [c(), c(), c()] == [0, 1, 2]"
+      },
+      {
+        "description": "Счётчик со стартом 10 и шагом 5",
+        "test_code": "c = make_counter(10, 5); assert [c(), c(), c()] == [10, 15, 20]"
+      },
+      {
+        "description": "Отрицательный шаг декремента",
+        "test_code": "c = make_counter(5, -1); assert [c(), c(), c()] == [5, 4, 3]"
+      },
+      {
+        "description": "Изоляция состояний между независимыми счётчиками",
+        "test_code": "c1 = make_counter(0); c2 = make_counter(100); c1(); c1(); c2(); assert c1() == 2 and c2() == 101"
+      }
+    ]
+  },
+  {
+    "id": "scope-03-running-average",
+    "topic_id": "closures_legb",
+    "topic_title": "Замыкания и область видимости LEGB",
+    "title": "Накопительное скользящее среднее (Running Average)",
+    "difficulty": "medium",
+    "theory": "### Хранение истории и агрегатов в замыкании\n\nЗамыкания — отличная альтернатива классам с одним методом, когда нужно поддерживать инкапсулированное состояние между вызовами без глобальных переменных.\n\nДля вычисления среднего арифметического потока данных можно хранить две переменные: `total` (сумму всех поступивших чисел) и `count` (количество поступивших чисел). Среднее вычисляется как `total / count` за $O(1)$ по времени и $O(1)$ по памяти.",
+    "instructions": "Напишите функцию `make_averager()`:\n1. Не принимает аргументов при создании.\n2. Возвращает функцию `averager(val: float) -> float`.\n3. Каждый вызов `averager(val)` принимает очередное число, добавляет его к общей выборке и возвращает обновлённое среднее арифметическое всех чисел, переданных этой функции с момента её создания.\n4. Не используйте глобальные переменные.",
+    "starter_code": "from typing import Callable\n\ndef make_averager() -> Callable[[float], float]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Объявите total = 0.0 и count = 0 во внешней функции. Во внутренней функции используйте nonlocal total, count.",
+    "test_cases": [
+      {
+        "description": "Последовательные числа 10, 20, 30",
+        "test_code": "avg = make_averager(); assert avg(10) == 10.0 and avg(20) == 15.0 and avg(30) == 20.0"
+      },
+      {
+        "description": "Последовательность 1, 2, 3, 4",
+        "test_code": "avg = make_averager(); assert [round(avg(x), 2) for x in [1, 2, 3, 4]] == [1.0, 1.5, 2.0, 2.5]"
+      },
+      {
+        "description": "Работа с отрицательными числами",
+        "test_code": "avg = make_averager(); assert avg(-10) == -10.0 and avg(10) == 0.0"
+      }
+    ]
+  },
+  {
+    "id": "scope-04-memoize-cache",
+    "topic_id": "closures_legb",
+    "topic_title": "Замыкания и область видимости LEGB",
+    "title": "Мемоизация через замыкание с метаданными (Memoize)",
+    "difficulty": "hard",
+    "theory": "### Мемоизация (Кэширование результатов)\n\nМемоизация — это техника оптимизации, при которой результаты вызова функции сохраняются в словаре `cache = {}`. При повторном вызове с теми же аргументами результат берётся из памяти, минуя повторные вычисления.\n\nПоскольку кортежи в Python являются хэшируемыми (`hashable`), кортеж позиционных аргументов `args` может служить ключом словаря кэша: `cache[args]`.\n\nФункции в Python являются объектами, поэтому к возвращаемой функции можно привязывать дополнительные методы/атрибуты, например `wrapper.cache_info = ...`.",
+    "instructions": "Напишите функцию `memoize(func)`:\n1. Принимает функцию `func`.\n2. Возвращает новую обёрнутую функцию `wrapper(*args)`.\n3. Если `args` уже есть в словаре кэша, вернуть сохранённое значение и увеличить счётчик попаданий (`hits`).\n4. Если `args` нет в кэше — вызвать `func(*args)`, сохранить результат в кэше, увеличить счётчик промахов (`misses`) и вернуть значение.\n5. Добавьте к `wrapper` функцию-атрибут `cache_info()`, возвращающую словарь `{\"hits\": hits, \"misses\": misses, \"size\": len(cache)}`.",
+    "starter_code": "from typing import Callable, Any\n\ndef memoize(func: Callable) -> Callable:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Создайте cache = {}, hits = 0, misses = 0. Внутри wrapper используйте nonlocal hits, misses. Прикрепите: wrapper.cache_info = lambda: {'hits': hits, 'misses': misses, 'size': len(cache)}.",
+    "test_cases": [
+      {
+        "description": "Проверка кэширования и сбора статистики hits/misses",
+        "test_code": "calls = [0]\ndef square(n):\n    calls[0] += 1; return n * n\nms = memoize(square)\nassert ms(4) == 16 and ms(4) == 16 and ms(4) == 16\nassert calls[0] == 1\ninfo = ms.cache_info()\nassert info == {\"hits\": 2, \"misses\": 1, \"size\": 1}"
+      },
+      {
+        "description": "Кэширование функции нескольких аргументов",
+        "test_code": "mf = memoize(lambda a, b: a + b)\nassert mf(2, 3) == 5 and mf(2, 3) == 5 and mf(3, 2) == 5\nassert mf.cache_info() == {\"hits\": 1, \"misses\": 2, \"size\": 2}"
+      }
+    ]
+  }
+]

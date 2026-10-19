@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Trainer — Интерактивный тренажер Python</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Highlight.js Theme for Theory code blocks -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  
+  <!-- App Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'><path d='M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.53 1.03 1.53 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z'/></svg>">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m18 16 4-4-4-4" stroke="#38bdf8"/>
+          <path d="m6 8-4 4 4 4" stroke="#38bdf8"/>
+          <path d="m14.5 4-5 16" stroke="#10b981"/>
+        </svg>
+        <span class="logo-title">Python <span class="logo-accent">Trainer</span></span>
+      </div>
+
+      <div class="topic-selector-wrapper">
+        <label for="topic-select" class="visually-hidden">Тема</label>
+        <div class="select-container">
+          <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10"/>
+            <path d="M6 10h10"/>
+          </svg>
+          <select id="topic-select" aria-label="Выбор темы">
+            <option value="">Загрузка тем...</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="progress-container">
+        <div class="progress-meta">
+          <span class="progress-label">Общий прогресс:</span>
+          <span id="progress-text" class="progress-value">0 / 0 (0%)</span>
+        </div>
+        <div class="progress-track" title="Прогресс решения задач">
+          <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button id="btn-reset-progress" class="btn btn-ghost btn-sm text-danger" title="Сбросить прогресс обучения">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>Сбросить прогресс</span>
+      </button>
+
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" title="Исходный код на GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="icon">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main IDE Split Layout -->
+  <main class="ide-container">
+    <!-- Left Panel: Theory, Instructions, Tasks & Hints -->
+    <section class="panel panel-left" id="panel-left">
+      <!-- Tabs Navigation -->
+      <div class="panel-tabs-bar">
+        <button class="panel-tab active" data-tab="theory" id="tab-btn-theory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>Задание и теория</span>
+        </button>
+        <button class="panel-tab" data-tab="hint" id="tab-btn-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+            <path d="M12 2v2"/>
+            <path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/>
+            <path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/>
+            <path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/>
+            <path d="m19.07 4.93-1.41 1.41"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          <span>Подсказка</span>
+        </button>
+        <button class="panel-tab" data-tab="tasks" id="tab-btn-tasks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          <span>Список задач</span>
+          <span class="badge badge-pill" id="badge-tasks-count">0</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="panel-content-scroll">
+        <!-- Tab 1: Theory & Instructions -->
+        <div class="tab-pane active" id="pane-theory">
+          <div class="task-header-card">
+            <div class="task-meta-top">
+              <span class="badge badge-topic" id="task-topic-badge">Тема</span>
+              <span class="badge badge-difficulty" id="task-difficulty-badge">Легкая</span>
+              <span class="badge badge-status" id="task-status-badge">Не решена</span>
+            </div>
+            <h1 class="task-title" id="task-title">Выберите задачу</h1>
+          </div>
+
+          <div class="markdown-body" id="theory-content">
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <span>Загрузка материалов задачи...</span>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation inside Theory Pane -->
+          <div class="task-navigation">
+            <button id="btn-prev-task" class="btn btn-secondary btn-sm" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
+              <span>Предыдущая</span>
+            </button>
+            <span class="task-nav-index" id="task-nav-counter">0 / 0</span>
+            <button id="btn-next-task" class="btn btn-secondary btn-sm" disabled>
+              <span>Следующая</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab 2: Hint Tab -->
+        <div class="tab-pane" id="pane-hint">
+          <div class="hint-container">
+            <div class="hint-card">
+              <div class="hint-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hint-large-icon">
+                  <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/>
+                  <path d="M10 21h4"/>
+                </svg>
+              </div>
+              <h3 class="hint-heading">Застряли над решением?</h3>
+              <p class="hint-subtext">
+                Попробуйте сначала написать решение самостоятельно. Но если нужно направить мысль — нажмите кнопку ниже, чтобы открыть подсказку.
+              </p>
+              
+              <div class="hint-action-box" id="hint-action-box">
+                <button id="btn-reveal-hint" class="btn btn-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <span>Показать подсказку</span>
+                </button>
+              </div>
+
+              <div class="hint-revealed-box hidden" id="hint-revealed-box">
+                <div class="hint-alert-box">
+                  <div class="hint-alert-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="16" x2="12" y2="12"/>
+                      <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <strong>Подсказка к задаче</strong>
+                  </div>
+                  <div class="hint-text-content markdown-body" id="hint-text-content">
+                    <!-- Hint text populated via JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Tasks List Tab -->
+        <div class="tab-pane" id="pane-tasks">
+          <div class="tasks-filter-bar">
+            <div class="search-input-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm search-icon">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="tasks-search" placeholder="Поиск по задачам..." autocomplete="off">
+            </div>
+
+            <div class="difficulty-filters" id="difficulty-filters">
+              <button class="filter-pill active" data-filter="all">Все</button>
+              <button class="filter-pill filter-easy" data-filter="easy">Легкие</button>
+              <button class="filter-pill filter-medium" data-filter="medium">Средние</button>
+              <button class="filter-pill filter-hard" data-filter="hard">Сложные</button>
+            </div>
+          </div>
+
+          <div class="tasks-tree-container" id="tasks-list">
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <span>Загрузка задач...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resizable Splitter (Left - Right) -->
+    <div class="resizer resizer-vertical" id="resizer-horizontal" title="Изменить ширину колонок"></div>
+
+    <!-- Right Panel: Editor Toolbar, Monaco Editor & Bottom Output Panel -->
+    <section class="panel panel-right" id="panel-right">
+      <!-- Editor Toolbar -->
+      <div class="editor-toolbar">
+        <div class="toolbar-left">
+          <div class="current-file-badge">
+            <span class="file-icon">🐍</span>
+            <span class="file-name" id="toolbar-task-id">solution.py</span>
+          </div>
+          <span class="autosave-indicator" id="autosave-status" title="Статус сохранения черновика">
+            <span class="status-dot"></span>
+            <span class="status-label">Сохранено</span>
+          </span>
+        </div>
+
+        <div class="toolbar-actions">
+          <button id="btn-reset-code" class="btn btn-ghost btn-sm" title="Сбросить код к начальному шаблону">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span>Сбросить код</span>
+          </button>
+
+          <button id="btn-copy-code" class="btn btn-ghost btn-sm" title="Скопировать код в буфер">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            <span>Копировать</span>
+          </button>
+
+          <button id="btn-run-code" class="btn btn-success" title="Запустить код (Ctrl + Enter)">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="icon-sm">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>Запустить</span>
+            <kbd class="kbd-shortcut">Ctrl+Enter</kbd>
+          </button>
+
+          <button id="btn-submit-code" class="btn btn-primary" title="Проверить решение на тестах (Ctrl + Shift + Enter)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+              <path d="m9 12 2 2 4-4"/>
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+            <span>Проверить решение</span>
+            <kbd class="kbd-shortcut">Ctrl+Shift+Enter</kbd>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor Host Container -->
+      <div class="editor-container" id="editor-container">
+        <div id="monaco-editor"></div>
+        <!-- Fallback Textarea if Monaco CDN is unavailable -->
+        <textarea id="code-fallback" class="fallback-textarea hidden" spellcheck="false" placeholder="# Напишите ваш код на Python здесь..."></textarea>
+        
+        <div id="editor-loading" class="editor-loading-overlay">
+          <div class="spinner"></div>
+          <span>Загрузка редактора кода...</span>
+        </div>
+      </div>
+
+      <!-- Resizable Splitter (Editor - Bottom Panel) -->
+      <div class="resizer resizer-horizontal" id="resizer-vertical" title="Изменить высоту панели вывода"></div>
+
+      <!-- Bottom Panel: Terminal Console Output & Test Results -->
+      <div class="panel-bottom" id="panel-bottom">
+        <div class="bottom-panel-header">
+          <div class="bottom-tabs">
+            <button class="bottom-tab active" data-tab="console" id="tab-btn-console">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+                <polyline points="4 17 10 11 4 5"/>
+                <line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+              <span>Консоль (Вывод)</span>
+              <span class="status-indicator-badge hidden" id="console-status-badge">OK</span>
+            </button>
+            <button class="bottom-tab" data-tab="tests" id="tab-btn-tests">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <path d="m9 15 2 2 4-4"/>
+              </svg>
+              <span>Результаты тестов</span>
+              <span class="badge badge-test-score hidden" id="tests-score-badge">0/0</span>
+            </button>
+          </div>
+
+          <div class="bottom-panel-actions">
+            <span class="execution-time-label hidden" id="execution-time-badge">24 мс</span>
+            <button id="btn-clear-output" class="btn btn-ghost btn-xs" title="Очистить вывод">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-xs">
+                <path d="M3 6h18"/>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+              </svg>
+              <span>Очистить</span>
+            </button>
+            <button id="btn-toggle-bottom-panel" class="btn btn-ghost btn-xs" title="Свернуть / Развернуть панель">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-xs icon-collapse">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="bottom-panel-content">
+          <!-- Pane: Console Terminal Output -->
+          <div class="bottom-pane active" id="pane-console">
+            <div class="terminal-view" id="terminal-view">
+              <div class="terminal-placeholder">
+                <p>Нажмите <kbd>Ctrl+Enter</kbd> или кнопку <strong>«Запустить»</strong> для выполнения кода.</p>
+                <p class="text-muted">Вывод функций <code>print()</code> и ошибки выполнения отобразятся здесь.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pane: Test Results -->
+          <div class="bottom-pane" id="pane-tests">
+            <div class="test-results-view" id="test-results-view">
+              <div class="terminal-placeholder">
+                <p>Нажмите <kbd>Ctrl+Shift+Enter</kbd> или кнопку <strong>«Проверить решение»</strong>.</p>
+                <p class="text-muted">Система запустит автоматические тесты и покажет результаты проверки.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Celebration Modal when all tests pass -->
+  <div class="modal-backdrop hidden" id="modal-celebration">
+    <div class="modal-card celebration-card">
+      <div class="celebration-badge-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="celebration-svg">
+          <circle cx="12" cy="8" r="7"/>
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+        </svg>
+      </div>
+
+      <h2 class="modal-title">Великолепно! Задача решена! 🎉</h2>
+      <p class="modal-desc" id="celebration-task-title">Все автоматические тесты успешно пройдены.</p>
+
+      <div class="celebration-stats" id="celebration-stats">
+        <div class="stat-pill">
+          <span class="stat-label">Тесты</span>
+          <span class="stat-val text-success" id="stat-tests-count">3 / 3</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Результат</span>
+          <span class="stat-val text-success">100%</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-label">Статус</span>
+          <span class="stat-val text-accent">Зачтено</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-celebration-stay" class="btn btn-secondary">
+          <span>Остаться на этой задаче</span>
+        </button>
+        <button id="btn-celebration-next" class="btn btn-primary">
+          <span>Следующая задача</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Progress Confirmation Modal -->
+  <div class="modal-backdrop hidden" id="modal-reset-confirm">
+    <div class="modal-card">
+      <div class="modal-icon-danger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="danger-svg">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+
+      <h2 class="modal-title">Сбросить весь прогресс?</h2>
+      <p class="modal-desc">
+        Это действие обнулит отметки о решенных задачах и сохраненные черновики кода. Это действие нельзя отменить.
+      </p>
+
+      <div class="modal-actions">
+        <button id="btn-cancel-reset" class="btn btn-secondary">Отмена</button>
+        <button id="btn-confirm-reset" class="btn btn-danger">Да, сбросить прогресс</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- External CDN Dependencies -->
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
+  <!-- Highlight.js for markdown code blocks syntax highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <!-- Canvas Confetti for victory fireworks -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- Monaco Editor AMD Loader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+  <!-- Application Scripts -->
+  <script src="js/editor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

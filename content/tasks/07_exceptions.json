@@ -1,0 +1,114 @@
+[
+  {
+    "id": "exc-01-safe-converter",
+    "topic_id": "exceptions",
+    "topic_title": "Обработка исключений",
+    "title": "Безопасное преобразование типов (try / except)",
+    "difficulty": "easy",
+    "theory": "### Обработка исключений с помощью try/except\n\nБлок `try-except` позволяет перехватывать и корректно обрабатывать ошибки во время выполнения программы, предотвращая аварийное завершение скрипта:\n\n```python\ntry:\n    # Код, в котором может возникнуть ошибка\n    result = 10 / divisor\nexcept ZeroDivisionError:\n    # Реакция на конкретную ошибку\n    result = 0\n```\n\nПерехват нескольких типов исключений одновременно осуществляется через кортеж:\n```python\nexcept (ValueError, TypeError):\n    ...\n```\nХорошим тоном в Python является перехват конкретных ожидаемых исключений, избегая перехвата базового `Exception` без необходимости.",
+    "instructions": "Напишите функцию `safe_int(val, default: int = 0) -> int`:\n1. Принимает значение `val` любого типа и целое число `default` (по умолчанию 0).\n2. Пытается преобразовать `val` в целое число с помощью `int(val)`.\n3. Если при преобразовании возникает `ValueError` (некорректная строка) или `TypeError` (неподходящий тип данных, например `None`), функция должна перехватить исключение и вернуть `default`.\n4. Если исключений не возникло, вернуть полученное целое число.",
+    "starter_code": "def safe_int(val, default: int = 0) -> int:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Используйте блок try: return int(val) except (ValueError, TypeError): return default.",
+    "test_cases": [
+      {
+        "description": "Успешное преобразование корректной строки",
+        "test_code": "assert safe_int(\"123\") == 123"
+      },
+      {
+        "description": "Перехват некорректной строки с возвратом default",
+        "test_code": "assert safe_int(\"abc\", default=-1) == -1"
+      },
+      {
+        "description": "Перехват None (TypeError)",
+        "test_code": "assert safe_int(None, default=42) == 42"
+      },
+      {
+        "description": "Преобразование вещественного числа float",
+        "test_code": "assert safe_int(45.9) == 45"
+      }
+    ]
+  },
+  {
+    "id": "exc-02-dict-lookup",
+    "topic_id": "exceptions",
+    "topic_title": "Обработка исключений",
+    "title": "Многоуровневый безопасный поиск в словаре (Deep Get)",
+    "difficulty": "medium",
+    "theory": "### Безопасная навигация по вложенным структурам\n\nПри обработке внешних данных (JSON, конфиги) часто встречаются структуры вида `d['user']['profile']['address']['city']`.\n\nЕсли на любом уровне вложенности ключ отсутствует, Python выбрасывает `KeyError`. Если вместо словаря встретится `None` или другой тип, попытка индексации вызовет `TypeError`.\n\nИспользование `try...except (KeyError, TypeError)` позволяет безопасно обойти путь ключей.",
+    "instructions": "Напишите функцию `deep_get(data: dict, keys_path: str, default=None)`:\n1. Принимает словарь `data`, строку пути `keys_path` (ключи, разделённые точкой, например `\"user.profile.age\"`) и значение по умолчанию `default`.\n2. Последовательно переходит по ключам пути во вложенных словарях.\n3. Если на каком-то шаге ключ отсутствует (`KeyError`) или текущий объект не позволяет индексацию (`TypeError`), функция возвращает `default`.\n4. Если путь успешно пройден до конца, возвращается найденное значение.",
+    "starter_code": "def deep_get(data: dict, keys_path: str, default=None):\n    # Ваш код здесь\n    pass\n",
+    "hint": "Пройдитесь по ключам keys_path.split('.'). На каждом шаге в блоке try пробуйте current = current[key], а при except (KeyError, TypeError): return default.",
+    "test_cases": [
+      {
+        "description": "Успешное извлечение значения из глубины",
+        "test_code": "sample = {\"user\": {\"profile\": {\"name\": \"Алексей\"}}}; assert deep_get(sample, \"user.profile.name\") == \"Алексей\""
+      },
+      {
+        "description": "Отсутствующий ключ с возвратом значения по умолчанию",
+        "test_code": "sample = {\"user\": {\"profile\": {\"name\": \"Алексей\"}}}; assert deep_get(sample, \"user.profile.age\", 0) == 0"
+      },
+      {
+        "description": "Попытка обращения к свойству при значении None",
+        "test_code": "sample = {\"user\": None}; assert deep_get(sample, \"user.profile.email\", \"no_email\") == \"no_email\""
+      },
+      {
+        "description": "Пустой словарь",
+        "test_code": "assert deep_get({}, \"a.b.c\") is None"
+      }
+    ]
+  },
+  {
+    "id": "exc-03-custom-exception",
+    "topic_id": "exceptions",
+    "topic_title": "Обработка исключений",
+    "title": "Собственные исключения и оператор raise",
+    "difficulty": "medium",
+    "theory": "### Пользовательские исключения (Custom Exceptions)\n\nДля обозначения бизнес-ошибок в приложениях создают собственные классы исключений, наследуясь от стандартного класса `Exception`:\n\n```python\nclass ValidationError(Exception):\n    \"\"\"Исключение при ошибках валидации данных.\"\"\"\n    pass\n```\n\nДля ручного возбуждения исключения используется оператор `raise`:\n\n```python\nif age < 0:\n    raise ValidationError(\"Возраст не может быть отрицательным\")\n```",
+    "instructions": "1. Объявите класс исключения `InvalidPasswordError`, наследующийся от `Exception`.\n2. Реализуйте функцию `validate_password(password: str) -> bool`:\n   - Пароль должен быть длиной не менее 8 символов;\n   - Должен содержать хотя бы одну заглавную букву (`any(c.isupper() for c in password)`);\n   - Должен содержать хотя бы одну строчную букву (`any(c.islower() for c in password)`);\n   - Должен содержать хотя бы одну цифру (`any(c.isdigit() for c in password)`).\n3. Если ХОТЯ БЫ ОДНО условие нарушено, выбросите `InvalidPasswordError` с информативным описанием.\n4. Если все требования соблюдены, функция должна вернуть `True`.",
+    "starter_code": "class InvalidPasswordError(Exception):\n    pass\n\ndef validate_password(password: str) -> bool:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Проверьте 4 условия. При невыполнении любого условия сделайте raise InvalidPasswordError('сообщение ошибки'). Если всё верно, верните True.",
+    "test_cases": [
+      {
+        "description": "Корректный надёжный пароль",
+        "test_code": "assert validate_password(\"SecurePass123\") is True"
+      },
+      {
+        "description": "Слишком короткий пароль (< 8 символов)",
+        "test_code": "err = False\ntry:\n    validate_password(\"Short1A\")\nexcept InvalidPasswordError:\n    err = True\nassert err is True, \"Должен возбуждать InvalidPasswordError при длине < 8\""
+      },
+      {
+        "description": "Пароль без заглавных букв",
+        "test_code": "err = False\ntry:\n    validate_password(\"password123\")\nexcept InvalidPasswordError:\n    err = True\nassert err is True, \"Должен возбуждать InvalidPasswordError без заглавных букв\""
+      },
+      {
+        "description": "Пароль без цифр",
+        "test_code": "err = False\ntry:\n    validate_password(\"NoDigitsPassword\")\nexcept InvalidPasswordError:\n    err = True\nassert err is True, \"Должен возбуждать InvalidPasswordError без цифр\""
+      }
+    ]
+  },
+  {
+    "id": "exc-04-retry-handler",
+    "topic_id": "exceptions",
+    "topic_title": "Обработка исключений",
+    "title": "Механизм повторных попыток (Retry с else и finally)",
+    "difficulty": "hard",
+    "theory": "### Полный цикл try / except / else / finally\n\nКонструкция обработки ошибок поддерживает четыре блока:\n- `try`: защищённый блок выполнения;\n- `except Exception`: перехват ошибки;\n- `else`: выполняется ТОЛЬКО в том случае, если в блоке `try` исключений НЕ произошло;\n- `finally`: выполняется ВСЕГДА, вне зависимости от того, была ошибка или нет (часто для освобождения ресурсов).\n\nПаттерн повторных попыток (Retry) незаменим при работе с сетевыми запросами и нестабильными сервисами.",
+    "instructions": "Напишите функцию `retry_operation(func, max_attempts: int = 3, default=None) -> tuple`:\n1. Принимает функцию без аргументов `func`, максимальное число попыток `max_attempts` и значение `default`.\n2. В цикле пытается вызвать `func()` до `max_attempts` раз.\n3. Если вызов успешен (сработал `else`), немедленно прерывает цикл.\n4. Если произошла ошибка (`except Exception as e`), сохраняет текст ошибки `str(e)` и пробует снова.\n5. Возвращает кортеж `(result, stats)`, где `stats` — словарь со структурой:\n   - `\"attempts\"`: количество фактически совершённых попыток;\n   - `\"success\"`: `True` если вызов удался, иначе `False`;\n   - `\"last_error\"`: строка с ошибкой при неудаче, или `None` при успехе.\n6. Если все попытки провалились, `result` равен `default`.",
+    "starter_code": "from typing import Callable, Any\n\ndef retry_operation(func: Callable, max_attempts: int = 3, default=None) -> tuple[Any, dict]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Ведите счётчик attempts. В цикле: try: res = func(); except Exception as e: last_error = str(e); else: success = True; last_error = None; break. Верните (res, {'attempts': attempts, 'success': success, 'last_error': last_error}).",
+    "test_cases": [
+      {
+        "description": "Успех с первой попытки",
+        "test_code": "res, stats = retry_operation(lambda: 42)\nassert res == 42\nassert stats[\"attempts\"] == 1\nassert stats[\"success\"] is True\nassert stats[\"last_error\"] is None"
+      },
+      {
+        "description": "Успех после нескольких сбоев (flaky function)",
+        "test_code": "cnt = [0]\ndef flaky():\n    cnt[0] += 1\n    if cnt[0] < 3:\n        raise ValueError(\"временный сбой\")\n    return \"успех\"\nres, stats = retry_operation(flaky, max_attempts=5)\nassert res == \"успех\"\nassert stats[\"attempts\"] == 3\nassert stats[\"success\"] is True"
+      },
+      {
+        "description": "Полный провал всех попыток с возвратом fallback",
+        "test_code": "def always_fail():\n    raise ConnectionError(\"сеть недоступна\")\nres, stats = retry_operation(always_fail, max_attempts=3, default=\"резерв\")\nassert res == \"резерв\"\nassert stats[\"attempts\"] == 3\nassert stats[\"success\"] is False\nassert stats[\"last_error\"] == \"сеть недоступна\""
+      }
+    ]
+  }
+]

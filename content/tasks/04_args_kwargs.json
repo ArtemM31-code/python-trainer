@@ -1,0 +1,114 @@
+[
+  {
+    "id": "args-01-multiply-all",
+    "topic_id": "args_kwargs",
+    "topic_title": "Аргументы *args и **kwargs",
+    "title": "Упаковка позиционных аргументов *args",
+    "difficulty": "easy",
+    "theory": "### Упаковка аргументов через *args\n\nСимвол звёздочки `*` перед именем параметра в определении функции указывает Python упаковать все переданные позиционные аргументы в кортеж (`tuple`):\n\n```python\ndef print_all(*args):\n    print(type(args))  # <class 'tuple'>\n    for item in args:\n        print(item)\n```\n\nЭто позволяет создавать функции, принимающие переменное количество аргументов: от 0 до бесконечности.",
+    "instructions": "Напишите функцию `multiply_all(*args: int | float) -> float`:\n1. Принимает произвольное количество позиционных аргументов `*args` (целые или вещественные числа).\n2. Перемножает все переданные числа.\n3. Если аргументы не были переданы вовсе, возвращает `1.0`.\n4. Результат должен быть числом с плавающей точкой (`float`).",
+    "starter_code": "def multiply_all(*args: int | float) -> float:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Инициализируйте product = 1.0, пройдитесь циклом for num in args: product *= num, и верните float(product).",
+    "test_cases": [
+      {
+        "description": "Произведение трёх чисел",
+        "test_code": "assert multiply_all(2, 3, 4) == 24.0"
+      },
+      {
+        "description": "Один аргумент",
+        "test_code": "assert multiply_all(5) == 5.0"
+      },
+      {
+        "description": "Без аргументов",
+        "test_code": "assert multiply_all() == 1.0"
+      },
+      {
+        "description": "Отрицательные и дробные числа",
+        "test_code": "assert multiply_all(2, -3, 0.5) == -3.0"
+      }
+    ]
+  },
+  {
+    "id": "args-02-html-tag-builder",
+    "topic_id": "args_kwargs",
+    "topic_title": "Аргументы *args и **kwargs",
+    "title": "Сборка HTML-тегов с **kwargs",
+    "difficulty": "medium",
+    "theory": "### Упаковка именованных аргументов через **kwargs\n\nДве звёздочки `**` перед параметром упаковывают все переданные именованные аргументы (keyword arguments) в словарь (`dict`):\n\n```python\ndef show_info(**kwargs):\n    for key, val in kwargs.items():\n        print(f\"{key} = {val}\")\n```\n\nЭто удобно для работы с динамическими атрибутами, параметрами конфигурации и генераторами разметки.",
+    "instructions": "Напишите функцию `build_html_tag(tag: str, content: str = \"\", **attributes) -> str`:\n1. Принимает имя тега `tag`, необязательное содержимое `content` (по умолчанию пустая строка `\"\"`) и любые именованные аргументы `**attributes`.\n2. Формирует строку открывающего и закрывающего тега: `<tag ...>content</tag>`.\n3. Атрибуты должны быть отсортированы по имени в алфавитном порядке и записаны в виде `key=\"val\"` через пробел.\n4. Если атрибутов нет, между именем тега и скобкой `>` не должно быть лишнего пробела: `<tag>content</tag>`.",
+    "starter_code": "def build_html_tag(tag: str, content: str = \"\", **attributes) -> str:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Сформируйте attrs: if attributes: attrs_str = ' ' + ' '.join(f'{k}=\"{v}\"' for k, v in sorted(attributes.items())) else: attrs_str = ''. Затем верните f'<{tag}{attrs_str}>{content}</{tag}>'.",
+    "test_cases": [
+      {
+        "description": "Тег с несколькими атрибутами (проверка сортировки)",
+        "test_code": "assert build_html_tag(\"div\", \"Привет\", id=\"box\", cls=\"container\") == '<div cls=\"container\" id=\"box\">Привет</div>'"
+      },
+      {
+        "description": "Тег без атрибутов с содержимым",
+        "test_code": "assert build_html_tag(\"p\", \"Простой текст\") == '<p>Простой текст</p>'"
+      },
+      {
+        "description": "Пустой тег без содержимого и без атрибутов",
+        "test_code": "assert build_html_tag(\"span\") == '<span></span>'"
+      },
+      {
+        "description": "Ссылка с атрибутом href",
+        "test_code": "assert build_html_tag(\"a\", \"Яндекс\", href=\"https://ya.ru\") == '<a href=\"https://ya.ru\">Яндекс</a>'"
+      }
+    ]
+  },
+  {
+    "id": "args-03-forwarding-wrapper",
+    "topic_id": "args_kwargs",
+    "topic_title": "Аргументы *args и **kwargs",
+    "title": "Проброс аргументов (Forwarding *args, **kwargs)",
+    "difficulty": "medium",
+    "theory": "### Проброс (Forwarding) аргументов\n\nПри создании функций высшего порядка, прокси-функций или декораторов часто нужно принять любые аргументы и «пробросить» их дальше в целевую функцию без изменений:\n\n```python\ndef proxy(func, *args, **kwargs):\n    # func вызывается с точной распаковкой всех полученных данных:\n    return func(*args, **kwargs)\n```\n\nЗдесь `*args` распаковывает кортеж позиционных аргументов, а `**kwargs` — словарь именованных.",
+    "instructions": "Напишите функцию `call_with_log(target_func, *args, **kwargs) -> dict`:\n1. Принимает целевую функцию `target_func` и произвольное количество позиционных (`*args`) и именованных (`**kwargs`) аргументов.\n2. Вызывает `target_func(*args, **kwargs)`.\n3. Возвращает словарь с отчётом о вызове со следующими ключами:\n   - `\"args\"`: кортеж позиционных аргументов;\n   - `\"kwargs\"`: словарь именованных аргументов;\n   - `\"result\"`: результат, возвращённый функцией `target_func`.",
+    "starter_code": "from typing import Callable, Any\n\ndef call_with_log(target_func: Callable, *args, **kwargs) -> dict[str, Any]:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Вызовите result = target_func(*args, **kwargs), затем верните {'args': args, 'kwargs': kwargs, 'result': result}.",
+    "test_cases": [
+      {
+        "description": "Вызов стандартной функции max с позиционными аргументами",
+        "test_code": "assert call_with_log(max, 1, 5, 3) == {\"args\": (1, 5, 3), \"kwargs\": {}, \"result\": 5}"
+      },
+      {
+        "description": "Вызов lambda-функции со смешанными аргументами",
+        "test_code": "assert call_with_log(lambda a, b, c=1: a + b + c, 2, 3, c=10) == {\"args\": (2, 3), \"kwargs\": {\"c\": 10}, \"result\": 15}"
+      },
+      {
+        "description": "Вызов функции без аргументов",
+        "test_code": "assert call_with_log(lambda: \"hello\") == {\"args\": (), \"kwargs\": {}, \"result\": \"hello\"}"
+      }
+    ]
+  },
+  {
+    "id": "args-04-merge-configs",
+    "topic_id": "args_kwargs",
+    "topic_title": "Аргументы *args и **kwargs",
+    "title": "Многоуровневый конфигуратор (Unpacking & Precedence)",
+    "difficulty": "hard",
+    "theory": "### Порядок приоритета и распаковка словарей\n\nВ реальных приложениях конфигурация собирается из нескольких источников:\n1. Базовые дефолтные настройки (`defaults`)\n2. Файлы профилей конфигурации (`*overrides`)\n3. Флаги командной строки или прямые параметры (`**kwargs`)\n\nКаждый следующий источник должен переопределять значения предыдущего. При этом исходный словарь `defaults` не должен мутировать (изменяться).",
+    "instructions": "Напишите функцию `merge_configs(defaults: dict, *overrides: dict, **kwargs) -> dict`:\n1. Принимает словарь по умолчанию `defaults`.\n2. Принимает любое количество словарей-переопределений `*overrides`.\n3. Принимает точечные именованные параметры `**kwargs`.\n4. Создаёт НОВЫЙ словарь. Не изменяйте входной словарь `defaults`!\n5. Последовательно накладывает словари из `overrides` поверх базового.\n6. В самом конце накладывает `kwargs` (наивысший приоритет).\n7. Возвращает объединённый словарь.",
+    "starter_code": "def merge_configs(defaults: dict, *overrides: dict, **kwargs) -> dict:\n    # Ваш код здесь\n    pass\n",
+    "hint": "Создайте копию config = dict(defaults). В цикле for ovr in overrides: config.update(ovr). Затем config.update(kwargs). Верните config.",
+    "test_cases": [
+      {
+        "description": "Проверка порядка приоритетов и неизменности defaults",
+        "test_code": "defaults = {\"host\": \"localhost\", \"port\": 8000, \"debug\": False}; res = merge_configs(defaults, {\"port\": 5000}, debug=True); assert res == {\"host\": \"localhost\", \"port\": 5000, \"debug\": True} and defaults[\"port\"] == 8000"
+      },
+      {
+        "description": "Приоритет kwargs над несколькими overrides",
+        "test_code": "assert merge_configs({\"a\": 1}, {\"a\": 2}, {\"a\": 3}, a=4) == {\"a\": 4}"
+      },
+      {
+        "description": "Только defaults без переопределений",
+        "test_code": "assert merge_configs({\"theme\": \"dark\", \"lang\": \"ru\"}) == {\"theme\": \"dark\", \"lang\": \"ru\"}"
+      },
+      {
+        "description": "Добавление новых ключей на разных уровнях",
+        "test_code": "assert merge_configs({\"a\": 1}, {\"b\": 2}, c=3) == {\"a\": 1, \"b\": 2, \"c\": 3}"
+      }
+    ]
+  }
+]

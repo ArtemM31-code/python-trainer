@@ -1,0 +1,118 @@
+[
+  {
+    "id": "oop-01-bank-account",
+    "topic_id": "oop",
+    "topic_title": "Объектно-ориентированное программирование",
+    "title": "Класс Банковский счёт (Инкапсуляция)",
+    "difficulty": "easy",
+    "theory": "### Классы, атрибуты и методы в Python\n\nКласс — это шаблон (чертёж) для создания объектов. Конструктор класса `__init__` вызывается автоматически при создании нового экземпляра:\n\n```python\nclass Person:\n    def __init__(self, name: str):\n        self.name = name  # атрибут экземпляра\n\n    def greet(self) -> str:\n        return f\"Привет, меня зовут {self.name}\"\n```\n\nПервым параметром каждого метода экземпляра всегда передаётся `self` — ссылка на конкретный экземпляр объекта.",
+    "instructions": "Реализуйте класс `BankAccount`:\n1. Конструктор `__init__(self, owner: str, balance: float = 0.0)`:\n   - Сохраняет владельца счета `owner`;\n   - Инициализирует баланс `balance` (как `float`);\n   - Если передан отрицательный начальный баланс (`balance < 0`), возбуждает `ValueError`.\n2. Метод `deposit(self, amount: float) -> float`:\n   - Увеличивает баланс на `amount` и возвращает обновлённый баланс;\n   - Если `amount <= 0`, возбуждает `ValueError`.\n3. Метод `withdraw(self, amount: float) -> float`:\n   - Списывает `amount` и возвращает обновлённый баланс;\n   - Если `amount <= 0` или `amount > balance`, возбуждает `ValueError`.\n4. Метод `get_balance(self) -> float`: возвращает текущий баланс.",
+    "starter_code": "class BankAccount:\n    def __init__(self, owner: str, balance: float = 0.0):\n        # Ваш код здесь\n        pass\n\n    def deposit(self, amount: float) -> float:\n        pass\n\n    def withdraw(self, amount: float) -> float:\n        pass\n\n    def get_balance(self) -> float:\n        pass\n",
+    "hint": "Проверяйте аргументы: if balance < 0: raise ValueError(...). Храните self._balance = float(balance).",
+    "test_cases": [
+      {
+        "description": "Пополнение и снятие средств",
+        "test_code": "acc = BankAccount(\"Иван\", 100.0)\nassert acc.deposit(50.0) == 150.0\nassert acc.withdraw(30.0) == 120.0\nassert acc.get_balance() == 120.0"
+      },
+      {
+        "description": "Баланс по умолчанию (0.0)",
+        "test_code": "acc = BankAccount(\"Анна\")\nassert acc.get_balance() == 0.0"
+      },
+      {
+        "description": "Отрицательный начальный баланс вызывает ValueError",
+        "test_code": "err = False\ntry:\n    BankAccount(\"Олег\", -50.0)\nexcept ValueError:\n    err = True\nassert err is True"
+      },
+      {
+        "description": "Снятие суммы, превышающей баланс, вызывает ValueError",
+        "test_code": "acc = BankAccount(\"Тест\", 50.0)\nerr = False\ntry:\n    acc.withdraw(100.0)\nexcept ValueError:\n    err = True\nassert err is True"
+      }
+    ]
+  },
+  {
+    "id": "oop-02-rectangle-properties",
+    "topic_id": "oop",
+    "topic_title": "Объектно-ориентированное программирование",
+    "title": "Свойства @property и вычисляемые атрибуты",
+    "difficulty": "medium",
+    "theory": "### Свойства (@property) и инкапсуляция\n\nДекоратор `@property` позволяет превратить метод в атрибут, доступный «на чтение» без круглых скобок:\n\n```python\nclass Circle:\n    def __init__(self, radius: float):\n        self._radius = radius\n\n    @property\n    def radius(self) -> float:\n        return self._radius\n\n    @radius.setter\n    def radius(self, value: float):\n        if value <= 0:\n            raise ValueError(\"Радиус должен быть положительным\")\n        self._radius = value\n```",
+    "instructions": "Реализуйте класс `Rectangle`:\n1. Конструктор `__init__(self, width: float, height: float)`.\n2. Свойства `width` и `height` с геттером (`@property`) и сеттером (`@width.setter` / `@height.setter`). Если новое значение `<= 0`, сеттер должен выбрасывать `ValueError`.\n3. Вычисляемое свойство `area` (площадь: $width \\times height$, только для чтения).\n4. Вычисляемое свойство `perimeter` (периметр: $2 \\times (width + height)$, только для чтения).\n5. Вычисляемое булево свойство `is_square` (возвращает `True`, если $width == height$, иначе `False`).",
+    "starter_code": "class Rectangle:\n    def __init__(self, width: float, height: float):\n        # Ваш код здесь\n        pass\n",
+    "hint": "В конструкторе присвойте self.width = width и self.height = height, чтобы задействовать валидацию в сеттерах. Храните значения в self._width и self._height.",
+    "test_cases": [
+      {
+        "description": "Вычисление площади, периметра и проверка на квадрат",
+        "test_code": "r = Rectangle(4.0, 5.0)\nassert r.area == 20.0\nassert r.perimeter == 18.0\nassert r.is_square is False"
+      },
+      {
+        "description": "Квадратный прямоугольник",
+        "test_code": "sq = Rectangle(6.0, 6.0)\nassert sq.is_square is True\nassert sq.area == 36.0"
+      },
+      {
+        "description": "Изменение ширины через сеттер",
+        "test_code": "r = Rectangle(2.0, 3.0)\nr.width = 10.0\nassert r.area == 30.0"
+      },
+      {
+        "description": "Выброс ValueError при недопустимых размерах",
+        "test_code": "err = False\ntry:\n    Rectangle(-1.0, 5.0)\nexcept ValueError:\n    err = True\nassert err is True"
+      }
+    ]
+  },
+  {
+    "id": "oop-03-inheritance-hierarchy",
+    "topic_id": "oop",
+    "topic_title": "Объектно-ориентированное программирование",
+    "title": "Наследование классов и полиморфизм (Payroll)",
+    "difficulty": "medium",
+    "theory": "### Наследование и super()\n\nНаследование позволяет создавать новые классы на базе существующих, переопределяя или дополняя их поведение:\n\n```python\nclass Animal:\n    def __init__(self, name: str):\n        self.name = name\n\nclass Dog(Animal):\n    def __init__(self, name: str, breed: str):\n        super().__init__(name)  # вызов конструктора родительского класса\n        self.breed = breed\n```\n\n**Полиморфизм** позволяет единообразно обрабатывать объекты разных производных классов через единый интерфейс родительского класса.",
+    "instructions": "Создайте иерархию классов расчёта заработной платы:\n1. Базовый класс `Employee`:\n   - `__init__(self, name: str, base_salary: float)`\n   - Метод `calculate_pay(self) -> float`: возвращает `base_salary`.\n2. Дочерний класс `Manager(Employee)`:\n   - `__init__(self, name: str, base_salary: float, bonus: float)`: вызывает `super().__init__` и сохраняет `bonus`.\n   - Метод `calculate_pay(self) -> float`: возвращает `base_salary + bonus`.\n3. Дочерний класс `Developer(Employee)`:\n   - `__init__(self, name: str, base_salary: float, completed_tasks: int, task_rate: float = 100.0)`\n   - Метод `calculate_pay(self) -> float`: возвращает `base_salary + (completed_tasks * task_rate)`.\n4. Функция `total_payroll(employees: list[Employee]) -> float`: принимает список сотрудников любого типа и возвращает суммарную выплату.",
+    "starter_code": "class Employee:\n    def __init__(self, name: str, base_salary: float):\n        pass\n\n    def calculate_pay(self) -> float:\n        pass\n\nclass Manager(Employee):\n    pass\n\nclass Developer(Employee):\n    pass\n\ndef total_payroll(employees: list[Employee]) -> float:\n    pass\n",
+    "hint": "Используйте super().__init__(name, base_salary) в потомках. В total_payroll используйте return sum(emp.calculate_pay() for emp in employees).",
+    "test_cases": [
+      {
+        "description": "Расчёт зарплаты базового сотрудника",
+        "test_code": "e = Employee(\"Иван\", 50000.0)\nassert e.calculate_pay() == 50000.0"
+      },
+      {
+        "description": "Расчёт зарплаты менеджера с бонусом",
+        "test_code": "m = Manager(\"Анна\", 70000.0, 20000.0)\nassert m.calculate_pay() == 90000.0\nassert isinstance(m, Employee)"
+      },
+      {
+        "description": "Расчёт зарплаты разработчика со ставкой за задачи",
+        "test_code": "d = Developer(\"Пётр\", 60000.0, 5, 200.0)\nassert d.calculate_pay() == 61000.0\nassert isinstance(d, Employee)"
+      },
+      {
+        "description": "Полиморфная сумма общего фонда оплаты труда",
+        "test_code": "staff = [Employee(\"A\", 1000.0), Manager(\"B\", 2000.0, 500.0), Developer(\"C\", 1500.0, 2, 250.0)]\nassert total_payroll(staff) == 5500.0"
+      }
+    ]
+  },
+  {
+    "id": "oop-04-vector-magic",
+    "topic_id": "oop",
+    "topic_title": "Объектно-ориентированное программирование",
+    "title": "Магические методы (Dunder methods): Вектор 2D",
+    "difficulty": "hard",
+    "theory": "### Специальные методы (Dunder Methods)\n\nСпециальные методы начинаются и заканчиваются двойным подчёркиванием (dunder):\n- `__repr__(self)` — понятное строковое представление для отладки;\n- `__add__(self, other)` — перегрузка оператора `+`;\n- `__sub__(self, other)` — перегрузка оператора `-`;\n- `__mul__(self, scalar)` — умножение вектора на число `*`;\n- `__eq__(self, other)` — проверка равенства `==`;\n- `__abs__(self)` — вызов встроенной функции `abs(obj)` (модуль/длина вектора $\\sqrt{x^2 + y^2}$).",
+    "instructions": "Реализуйте класс `Vector2D`:\n1. Конструктор `__init__(self, x: float, y: float)`: сохраняет координаты `x` и `y` (в виде `float`).\n2. Метод `__repr__(self) -> str`: возвращает строку формата `\"Vector2D(x, y)\"`.\n3. Метод `__add__(self, other: \"Vector2D\") -> \"Vector2D\"`: возвращает новый `Vector2D(self.x + other.x, self.y + other.y)`.\n4. Метод `__sub__(self, other: \"Vector2D\") -> \"Vector2D\"`: возвращает новый `Vector2D(self.x - other.x, self.y - other.y)`.\n5. Метод `__mul__(self, scalar: float) -> \"Vector2D\"`: возвращает новый `Vector2D(self.x * scalar, self.y * scalar)`.\n6. Метод `__eq__(self, other) -> bool`: возвращает `True`, если `other` является `Vector2D` и координаты `x` и `y` равны.\n7. Метод `__abs__(self) -> float`: возвращает длину вектора $\\sqrt{x^2 + y^2}$ (можно использовать `math.hypot(self.x, self.y)`).",
+    "starter_code": "import math\n\nclass Vector2D:\n    def __init__(self, x: float, y: float):\n        # Ваш код здесь\n        pass\n",
+    "hint": "Используйте math.hypot(self.x, self.y) для __abs__. Для __eq__ проверьте isinstance(other, Vector2D) and self.x == other.x and self.y == other.y.",
+    "test_cases": [
+      {
+        "description": "Строковое представление __repr__ и длина вектора __abs__",
+        "test_code": "v = Vector2D(3.0, 4.0)\nassert repr(v) == \"Vector2D(3.0, 4.0)\"\nassert abs(v) == 5.0"
+      },
+      {
+        "description": "Сложение и вычитание векторов",
+        "test_code": "v1 = Vector2D(1.0, 2.0)\nv2 = Vector2D(3.0, 4.0)\nassert v1 + v2 == Vector2D(4.0, 6.0)\nassert v2 - v1 == Vector2D(2.0, 2.0)"
+      },
+      {
+        "description": "Умножение вектора на скаляр",
+        "test_code": "v = Vector2D(2.0, 3.0)\nassert v * 3 == Vector2D(6.0, 9.0)"
+      },
+      {
+        "description": "Проверка равенства и неравенства векторов",
+        "test_code": "assert Vector2D(1.0, 2.0) == Vector2D(1.0, 2.0)\nassert Vector2D(1.0, 2.0) != Vector2D(2.0, 1.0)\nassert (Vector2D(1.0, 2.0) == \"not a vector\") is False"
+      }
+    ]
+  }
+]
