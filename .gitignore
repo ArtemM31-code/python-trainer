@@ -46,3 +46,4 @@ user_progress.json
 *.swo
 .DS_Store
 Thumbs.db
+secret_key.txt
